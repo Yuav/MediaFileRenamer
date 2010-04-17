@@ -44,7 +44,7 @@ public class JPGRenamer implements IMediaFileRenamer {
 					int type = endian2(file.readUnsignedShort(), lendian);
 					long count = endian4(file.readInt(), lendian);
 					long offset = endian4(file.readInt(), lendian);
-					if (false) {
+					if (1 == 2) {
 						System.out.println("entry " + i + ", tag=" + Integer.toHexString(tag) + ", type=" + Integer.toHexString(type)
 								+ ", count=" + Integer.toHexString((int) count) + ", offset=" + Integer.toHexString((int) offset));
 					}

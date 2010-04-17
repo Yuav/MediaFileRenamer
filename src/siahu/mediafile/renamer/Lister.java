@@ -6,11 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Lister {
 
 	private File[] files;
 	private ArrayList<IMediaFileRenamer> plugins;
+	private List<RenameItem> renameList;
 	
 	/**
 	 * Constructor
@@ -22,6 +24,7 @@ public class Lister {
 		this.plugins = new ArrayList<IMediaFileRenamer>();
 		plugins.add(new MOVRenamer());
 		plugins.add(new JPGRenamer());
+		this.renameList = new ArrayList<RenameItem>();
 	}
 	
 	/**
@@ -31,6 +34,15 @@ public class Lister {
 		for (int i = 0; i < files.length; i++) {
 			rename(files[i]);
 		}
+	}
+	
+	/**
+	 * The RenameList is populated in the rename(File) method. 
+	 * 
+	 * @return Rename List
+	 */
+	public List<RenameItem> getRenameList() {
+		return renameList;
 	}
 
 	private void rename(File file) {
@@ -53,7 +65,8 @@ public class Lister {
 				}
 				if (newName != null) {
 					System.out.println("Renaming " + file.getName() + " to " + newName);
-//					file.renameTo(new File(file.getParentFile(), newName));
+					RenameItem renameItem = new RenameItem(file, newName);
+					this.renameList.add(renameItem);
 				} else {
 					System.err.println("Cannot rename " + file.getName());
 				}

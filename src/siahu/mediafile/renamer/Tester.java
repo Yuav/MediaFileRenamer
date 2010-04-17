@@ -14,6 +14,8 @@ public class Tester {
 		File file = new File("/media/LaCie/Memories/2010/RENAME/P31-01-10_13.15.JPG");
 		Lister lister = new Lister(new File[] {file});
 		lister.list();
+		Renamer renamer = new Renamer();
+		renamer.rename(lister.getRenameList());
 	}
 
 	public static void main2(String[] args) {
