@@ -1,0 +1,13 @@
+
+Media File --> Media Identifier --> Media Reader
+
+Media Identifier identifies the type of media file to be read.
+It may use the file extension as a hint, but it cannot depend only on that
+because file extensions can be easily renamed.
+
+Once a media file is identified it can then be read.
+
+The application will have a list of media identifiers. As a media file is
+passed, the media identifiers will be examined to find the first one that can
+identify the file. For a pluggable design, it should be possible to add
+additional media identifiers.
