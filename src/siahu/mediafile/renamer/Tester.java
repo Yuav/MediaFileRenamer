@@ -11,11 +11,16 @@ public class Tester {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		File file = new File("/media/LaCie/Memories/2010/RENAME/P31-01-10_13.15.JPG");
+		File file = new File("/media/Seagate/RENAME");
+//                File file = new File("/media/LaCie/OnlineStorageSolution_backup2/Memories/2009");
 		Lister lister = new Lister(new File[] {file});
 		lister.list();
-		Renamer renamer = new Renamer();
-		renamer.rename(lister.getRenameList());
+//		boolean commit = false;
+                boolean commit = true;
+		if (commit) {
+	                Renamer renamer = new Renamer();
+	                renamer.rename(lister.getRenameList());
+		}
 	}
 
 	public static void main2(String[] args) {

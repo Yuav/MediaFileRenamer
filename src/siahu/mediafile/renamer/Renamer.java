@@ -2,14 +2,14 @@ package siahu.mediafile.renamer;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 public class Renamer {
 
 	public Renamer() {
 	}
 
-	public void rename(List<RenameItem> list) {
+	public void rename(Set<RenameItem> list) {
 		Iterator<RenameItem> it = list.iterator();
 		while (it.hasNext()) {
 			RenameItem item = it.next();

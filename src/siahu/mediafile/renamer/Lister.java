@@ -6,13 +6,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Lister {
 
 	private File[] files;
 	private ArrayList<IMediaFileRenamer> plugins;
-	private List<RenameItem> renameList;
+	private Set<RenameItem> renameList;
 	
 	/**
 	 * Constructor
@@ -24,7 +26,7 @@ public class Lister {
 		this.plugins = new ArrayList<IMediaFileRenamer>();
 		plugins.add(new MOVRenamer());
 		plugins.add(new JPGRenamer());
-		this.renameList = new ArrayList<RenameItem>();
+		this.renameList = new TreeSet<RenameItem>();
 	}
 	
 	/**
@@ -34,6 +36,11 @@ public class Lister {
 		for (int i = 0; i < files.length; i++) {
 			rename(files[i]);
 		}
+		Iterator<RenameItem> it = this.renameList.iterator();
+		while (it.hasNext()) {
+		    RenameItem ri = it.next();
+                    System.out.println("Renaming " + ri.getFile().getName() + " to " + ri.getNewName());
+		}
 	}
 	
 	/**
@@ -41,7 +48,7 @@ public class Lister {
 	 * 
 	 * @return Rename List
 	 */
-	public List<RenameItem> getRenameList() {
+	public Set<RenameItem> getRenameList() {
 		return renameList;
 	}
 
@@ -64,9 +71,11 @@ public class Lister {
 					}
 				}
 				if (newName != null) {
-					System.out.println("Renaming " + file.getName() + " to " + newName);
-					RenameItem renameItem = new RenameItem(file, newName);
-					this.renameList.add(renameItem);
+				    if (newName.equals(file.getName()) == false) {
+//                                        System.out.println("Renaming " + file.getName() + " to " + newName);
+                                        RenameItem renameItem = new RenameItem(file, newName);
+                                        this.renameList.add(renameItem);
+				    }
 				} else {
 					System.err.println("Cannot rename " + file.getName());
 				}
