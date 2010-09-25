@@ -73,11 +73,14 @@ public class Lister {
             try {
                 dis = new RandomAccessFile(file, "r");
                 String newName = null;
-                Iterator<IMediaFileRenamer> iterator = plugins.iterator();
-                while (iterator.hasNext()) {
-                    IMediaFileRenamer plugin = iterator.next();
+                for(int i=0; i<plugins.size(); i++) {
+                    IMediaFileRenamer plugin = plugins.get(i);
                     if (plugin.canHandle(dis, file)) {
                         newName = plugin.rename(dis, file);
+                        if (i > 0) {
+                            plugins.remove(i);
+                            plugins.add(0, plugin);
+                        }
                         break;
                     }
                 }
