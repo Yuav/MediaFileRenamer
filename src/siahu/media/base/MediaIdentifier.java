@@ -5,6 +5,6 @@ import java.io.IOException;
 
 public interface MediaIdentifier {
 
-	MediaReader getReader(File media) throws IOException;
+    MediaReader getReader(File media) throws IOException;
 
 }

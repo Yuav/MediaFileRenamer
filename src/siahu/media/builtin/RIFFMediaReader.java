@@ -6,10 +6,10 @@ import siahu.media.base.MediaReader;
 
 public class RIFFMediaReader implements MediaReader {
 
-	@Override
-	public void read(File media) {
-		// TODO Auto-generated method stub
+    @Override
+    public void read(File media) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
 }

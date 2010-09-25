@@ -34,7 +34,7 @@ public class JPGRenamer implements IMediaFileRenamer {
         boolean lendian = false;
         file.seek(2);
         long exifOffset = file.getFilePointer();
-//        System.out.println("Exif offset " + exifOffset);
+        // System.out.println("Exif offset " + exifOffset);
         byte[] marker = new byte[2];
         file.readFully(marker);
         if ((marker[0] & 0xFF) == 0xFF) {
@@ -46,7 +46,7 @@ public class JPGRenamer implements IMediaFileRenamer {
                 readIDF(file, lendian, map);
             }
         }
-//        System.out.println(map);
+        // System.out.println(map);
         name = (String) map.get("Date9003");
         if (name == null) {
             name = (String) map.get("Date132");
@@ -54,10 +54,11 @@ public class JPGRenamer implements IMediaFileRenamer {
         return name;
     }
 
-    private void readIDF(RandomAccessFile file, boolean lendian, Map<String, Object> map) throws IOException {
+    private void readIDF(RandomAccessFile file, boolean lendian,
+            Map<String, Object> map) throws IOException {
         long exifSubIFD = 0;
         short entries = (short) endian2(file.readShort(), lendian);
-        
+
         for (int i = 0; i < entries; i++) {
             int tag = endian2(file.readUnsignedShort(), lendian);
             int type = endian2(file.readUnsignedShort(), lendian);
@@ -67,19 +68,16 @@ public class JPGRenamer implements IMediaFileRenamer {
                 System.out.println("entry " + i + ", tag="
                         + Integer.toHexString(tag) + ", type="
                         + Integer.toHexString(type) + ", count="
-                        + Integer.toHexString((int) count)
-                        + ", offset="
+                        + Integer.toHexString((int) count) + ", offset="
                         + Integer.toHexString((int) offset));
             }
-            if ((tag == 0x0132) || (tag == 0x9003))
-            {
+            if ((tag == 0x0132) || (tag == 0x9003)) {
                 long curoff = file.getFilePointer();
                 file.seek(offset + 0x0C);
                 byte[] date = new byte[(int) count];
                 file.read(date);
                 try {
-                    String name = toSdf
-                            .format(fromSdf.parse(new String(date)));
+                    String name = toSdf.format(fromSdf.parse(new String(date)));
                     name = name + ".JPG";
                     map.put("Date" + Integer.toHexString(tag), name);
                 } catch (ParseException e) {
@@ -95,47 +93,30 @@ public class JPGRenamer implements IMediaFileRenamer {
         long nextIFDOffset = endian4(file.readInt(), lendian);
 
         if (exifSubIFD > 0) {
-//            System.out.println("ExifSubIFD offset = " + exifSubIFD);
+            // System.out.println("ExifSubIFD offset = " + exifSubIFD);
             file.seek(0x0C + exifSubIFD);
             readIDF(file, lendian, map);
         }
 
         if (nextIFDOffset > 0) {
-//            System.out.println("Next IFD " + nextIFDOffset);
+            // System.out.println("Next IFD " + nextIFDOffset);
             file.seek(0x0C + nextIFDOffset);
             readIDF(file, lendian, map);
         }
         /*
-        if (exifIFD > 0) {
-            file.seek(exifIFD + 0x0C);
-            short entries2 = file.readShort();
-            for (int i = 0; i < entries2; i++) {
-                int tag = file.readUnsignedShort();
-                // System.out.println("entry " + i + ", tag " +
-                // Integer.toHexString(tag));
-                if (tag == 0x9003) {
-                    file.readShort();
-                    int comp = file.readInt();
-                    int offset = file.readInt();
-                    file.seek(offset + 0x0C);
-                    byte[] date = new byte[comp];
-                    file.read(date);
-                    try {
-                        name = toSdf.format(fromSdf.parse(new String(
-                                date)));
-                        name = name + ".JPG";
-                        map.put("Date9003", name);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-                file.skipBytes(10);
-            }
-        }
-        */
+         * if (exifIFD > 0) { file.seek(exifIFD + 0x0C); short entries2 =
+         * file.readShort(); for (int i = 0; i < entries2; i++) { int tag =
+         * file.readUnsignedShort(); // System.out.println("entry " + i +
+         * ", tag " + // Integer.toHexString(tag)); if (tag == 0x9003) {
+         * file.readShort(); int comp = file.readInt(); int offset =
+         * file.readInt(); file.seek(offset + 0x0C); byte[] date = new
+         * byte[comp]; file.read(date); try { name =
+         * toSdf.format(fromSdf.parse(new String( date))); name = name + ".JPG";
+         * map.put("Date9003", name); } catch (ParseException e) {
+         * e.printStackTrace(); } return null; } file.skipBytes(10); } }
+         */
     }
-    
+
     private long endian4(int x, boolean lendian) {
         if (lendian) {
             int b1 = ((x & 0xFF000000) >> 24) & 0x000000FF;
@@ -157,5 +138,5 @@ public class JPGRenamer implements IMediaFileRenamer {
             return x;
         }
     }
-    
+
 }

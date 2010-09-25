@@ -4,5 +4,5 @@ import java.io.File;
 
 public interface MediaReader {
 
-	void read(File media);
+    void read(File media);
 }

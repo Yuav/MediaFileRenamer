@@ -5,6 +5,6 @@ import java.io.IOException;
 
 public interface AtomReader {
 
-	int read(DataInputStream dis, int len) throws IOException;
+    int read(DataInputStream dis, int len) throws IOException;
 
 }
