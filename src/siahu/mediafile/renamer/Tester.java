@@ -4,6 +4,9 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Tester {
 
@@ -11,13 +14,18 @@ public class Tester {
      * @param args
      */
     public static void main(String[] args) {
-        File file = new File("/media/Seagate/RENAME");
+        Logger logger = Logger.getLogger("");
+        logger.setLevel(Level.INFO);
+        for (Handler handler : logger.getHandlers()) {
+            handler.setLevel(Level.INFO);
+        }
+        File file = new File("/media/Seagate/RENAMEAVI");
         // File file = new
         // File("/media/LaCie/OnlineStorageSolution_backup2/Memories/2009");
         Lister lister = new Lister(new File[] { file });
         lister.list();
-        // boolean commit = false;
-        boolean commit = true;
+        boolean commit = false;
+//        commit = true;
         if (commit) {
             Renamer renamer = new Renamer();
             renamer.rename(lister.getRenameList());

@@ -3,8 +3,6 @@ package siahu.iso14496.type;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import siahu.mov.reader.MOVReader;
-
 public class BaseAtomReader extends Box implements AtomReader {
 
     public BaseAtomReader() {

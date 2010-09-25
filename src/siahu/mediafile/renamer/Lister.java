@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Lister {
 
     private File[] files;
     private ArrayList<IMediaFileRenamer> plugins;
     private Set<RenameItem> renameList;
+    private Logger logger;
 
     /**
      * Constructor
@@ -27,7 +30,9 @@ public class Lister {
         this.plugins = new ArrayList<IMediaFileRenamer>();
         plugins.add(new MOVRenamer());
         plugins.add(new JPGRenamer());
+        plugins.add(new AVIRenamer());
         this.renameList = new TreeSet<RenameItem>();
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
     /**
@@ -35,12 +40,15 @@ public class Lister {
      */
     public void list() {
         for (int i = 0; i < files.length; i++) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Processing " + files[i]);
+            }
             rename(files[i]);
         }
         Iterator<RenameItem> it = this.renameList.iterator();
         while (it.hasNext()) {
             RenameItem ri = it.next();
-            System.out.println("Renaming " + ri.getFile().getName() + " to "
+            logger.info("Renaming " + ri.getFile().getName() + " to "
                     + ri.getNewName());
         }
     }
@@ -65,22 +73,25 @@ public class Lister {
             try {
                 dis = new RandomAccessFile(file, "r");
                 String newName = null;
-                for (int i = 0; i < plugins.size(); i++) {
-                    IMediaFileRenamer plugin = plugins.get(i);
-                    if (plugin.canHandle(dis)) {
-                        newName = plugin.rename(dis);
+                Iterator<IMediaFileRenamer> iterator = plugins.iterator();
+                while (iterator.hasNext()) {
+                    IMediaFileRenamer plugin = iterator.next();
+                    if (plugin.canHandle(dis, file)) {
+                        newName = plugin.rename(dis, file);
                         break;
                     }
                 }
                 if (newName != null) {
                     if (newName.equals(file.getName()) == false) {
-                        // System.out.println("Renaming " + file.getName() +
-                        // " to " + newName);
+                        if (logger.isLoggable(Level.FINE)) {
+                            logger.fine("Renaming " + file.getName() + " to "
+                                    + newName);
+                        }
                         RenameItem renameItem = new RenameItem(file, newName);
                         this.renameList.add(renameItem);
                     }
                 } else {
-                    System.err.println("Cannot rename " + file.getName());
+                    logger.warning("Cannot rename " + file.getName());
                 }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

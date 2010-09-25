@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import siahu.mov.reader.MOVReader;
-
 /**
  * <h2>Definition</h2>
  * 
@@ -79,8 +77,8 @@ public class StcoAtomReader implements AtomReader {
         // start of a chunk into its containing
         // media file.
         for (int i = 0; i < entryCount.intValue(); i++) {
-            BigInteger chunkOffset = new BigInteger(Arrays.copyOfRange(buf,
-                    offset, offset += 4));
+            // BigInteger chunkOffset = new BigInteger(Arrays.copyOfRange(buf,
+            // offset, offset += 4));
             // System.out.println("Chunk offset " + i + " = " + chunkOffset);
         }
 

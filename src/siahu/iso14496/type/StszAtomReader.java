@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import siahu.mov.reader.MOVReader;
-
 /**
  * <pre>
  * Box Type  : ‘stsz’, ‘stz2’

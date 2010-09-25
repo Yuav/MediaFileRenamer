@@ -1,33 +1,47 @@
 package siahu.mediafile.renamer;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MOVRenamer implements IMediaFileRenamer {
 
     static private int ATOM_LEAF = 1;
     static private int ATOM_CONTAINER = 2;
     static private int ATOM_UNKNOWN = 3;
+    private Logger logger;
 
     public MOVRenamer() {
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Override
-    public boolean canHandle(RandomAccessFile file) throws IOException {
-        file.seek(0);
-        int b1 = file.readUnsignedShort();
-        if (b1 == 0xFFD8) {
-            return false;
+    public boolean canHandle(RandomAccessFile raf, File file) throws IOException {
+        boolean canHandle = false;
+
+        if (file.getName().endsWith(".MOV")) {
+            canHandle = true;
         }
-        return true;
+        if (canHandle) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.fine("Can handle " + raf);
+            }
+        } else {
+            if (logger.isLoggable(Level.FINER)) {
+                logger.finer("Cannot handle " + raf);
+            }
+        }
+        return canHandle;
     }
 
     @Override
-    public String rename(RandomAccessFile file) throws IOException {
-        file.seek(0);
-        return readAtom(file) + ".MOV";
+    public String rename(RandomAccessFile raf, File file) throws IOException {
+        raf.seek(0);
+        return readAtom(raf) + ".MOV";
     }
 
     private String readAtom(RandomAccessFile dis) throws IOException {
