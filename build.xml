@@ -1,0 +1,50 @@
+<project name="MediaFileRenamer" default="dist" basedir=".">
+	<property name="shortname" value="mediafilerenamer" />
+	<property name="release" value="1.1" />
+	
+	<property name="build.dir" location="build"/>
+	<property name="dist.dir" location="dist"/>
+	<property name="src.dir" location="src"/>
+
+	<target name="dist" depends="compile">
+		<jar destfile="${dist.dir}/${shortname}-${release}.jar" basedir="${build.dir}"/>
+		<copy file="bin/mediafilerenamer.sh" todir="${dist.dir}"/>
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${build.dir}"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+
+	<target name="gendoc">
+		<javadoc packageList="doclist.txt" destdir="docs/api" use="true" author="true" Overview="src/overview.html" sourcepath="src" windowtitle="NiceMice" doctitle="NiceMice">
+			<!--			<link offline="true"
+			      href="http://java.sun.com/products/jdk/1.3.1/docs/api/"
+					packagelistLoc="C:\jdk1.3\docs\api" -->
+			<link href="file:///C:/jdk1.3/docs/api" />
+		</javadoc>
+	</target>
+
+	<target name="release">
+		<property name="reldir" location="${shortname}-${release}" />
+		<mkdir dir="${reldir}" />
+		<jar destfile="${reldir}/${shortname}-${release}.jar" basedir="bin" manifest="META-INF/MANIFEST.MF" />
+		<zip destfile="${reldir}/${shortname}-src-${release}.zip" basedir="." excludes="bin/**,doc/**" />
+		<zip destfile="${reldir}/${shortname}-doc-${release}.zip" basedir="." includes="doc/**" />
+	</target>
+
+	<target name="zipall">
+		<tstamp />
+		<zip destfile="${shortname}_${DSTAMP}.zip" basedir="." />
+	</target>
+
+</project>
