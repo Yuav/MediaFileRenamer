@@ -48,7 +48,7 @@ public class AVIRenamer implements IMediaFileRenamer {
     @Override
     public String rename(RandomAccessFile raf, File file) throws IOException {
         Date d = new Date(file.lastModified());
-        return toSdf.format(d);
+        return toSdf.format(d)  + ".AVI";
     }
 
 }
