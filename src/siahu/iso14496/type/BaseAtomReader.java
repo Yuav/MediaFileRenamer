@@ -13,8 +13,6 @@ public class BaseAtomReader extends Box implements AtomReader {
         byte[] buf = new byte[len];
         dis.readFully(buf);
 
-        // System.err.println(MOVReader.bytes2hex(buf));
-
         return len;
     }
 

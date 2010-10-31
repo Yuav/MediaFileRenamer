@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.iso14496.type.AtomReader;
 import siahu.iso14496.type.AtomType;
@@ -33,6 +35,7 @@ public class MOVReader {
 
     private long streampos = 0;
     private HashMap<String, AtomType> atommap;
+    private Logger logger;
 
     class PathEntry {
         String type;
@@ -98,10 +101,13 @@ public class MOVReader {
         atommap.put("udta", new AtomType("udta", AtomType.ATOM_CONTAINER, null));
         atommap.put("vmhd", new AtomType("vmhd", AtomType.ATOM_LEAF,
                 new BaseAtomReader()));
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
     public void read(File movFile) {
-        System.out.println(movFile);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(movFile.toString());
+        }
         if (movFile.isFile() == false)
             return;
         DataInputStream dis = null;
@@ -114,7 +120,9 @@ public class MOVReader {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (EOFException e) {
-            System.out.println("EOF");
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("EOF");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -140,7 +148,9 @@ public class MOVReader {
         for (int i = 0; i < depth; i++) {
             indent += "\t";
         }
-        System.out.println(indent + type + ", " + len);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(indent + type + ", " + len);
+        }
         AtomType atomType = atommap.get(type);
         if (atomType == null) {
             dis.skip(len - 8);
@@ -149,7 +159,6 @@ public class MOVReader {
             PathEntry pe = new PathEntry();
             pe.type = type;
             pe.pos = streampos + (len - 8);
-            // System.out.println("Pushing " + pe.type + ", " + pe.pos);
             path.push(pe);
 
             ContainerBox parent = boxes.peek();
@@ -187,11 +196,8 @@ public class MOVReader {
         }
         while (path.isEmpty() == false) {
             PathEntry pe = path.peek();
-            // System.out.println(streampos + ">=" + pe.pos);
             if (streampos >= pe.pos) {
                 path.pop();
-                // System.out.println("Popping " + pe.type + ", " + pe.pos +
-                // " : ");
             } else {
                 break;
             }
@@ -215,20 +221,6 @@ public class MOVReader {
         return sdf.format(cal.getTime());
     }
 
-    /*
-     * static short bytes2short(byte[] bytes, int offset) { int res = 0; for
-     * (int i=0; i<2; i++) { res = (res<<8) | (bytes[offset+i] & 0xFF); } return
-     * (short) res; }
-     * 
-     * static int bytes2int(byte[] bytes, int offset) { int res = 0; for (int
-     * i=0; i<4; i++) { res = (res<<8) | (bytes[offset+i] & 0xFF); } return res;
-     * }
-     * 
-     * static long bytes2long(byte[] bytes, int offset) { int res = 0; for (int
-     * i=0; i<8; i++) { res = (res<<8) | (bytes[offset+i] & 0xFF); } return res;
-     * }
-     */
-
     public static String bytes2hex(byte[] bytes) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
@@ -246,11 +238,7 @@ public class MOVReader {
      */
     public static void main(String[] args) {
         MOVReader reader = new MOVReader();
-        // reader.read(new
-        // File("/home/psiahu/Videos/Batch001/20090906-182742.MOV"));
-        // reader.read(new File("/home/psiahu/test2.mov"));
         reader.read(new File("/home/psiahu/Desktop/2009-10/20091001-190526.MOV"));
-        // reader.read(new File("/home/psiahu/dvd/test.mp4"));
     }
 
 }

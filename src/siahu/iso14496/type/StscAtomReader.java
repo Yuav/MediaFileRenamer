@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -66,40 +68,57 @@ import siahu.mov.reader.MOVReader;
  * 
  */
 public class StscAtomReader implements AtomReader {
+    
+    private Logger logger;
+    
+    public StscAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
 
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         byte version = buf[0];
-        System.out.println("Version = " + version);
-
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
         BigInteger entryCount = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Entry count = " + entryCount);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Entry count = " + entryCount);
+        }
 
         for (int i = 0; i < entryCount.intValue(); i++) {
 
             BigInteger firstChunk = new BigInteger(Arrays.copyOfRange(buf,
                     offset, offset += 4));
-            System.out.println("Entry " + i + " : First chunk = " + firstChunk);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Entry " + i + " : First chunk = " + firstChunk);
+            }
 
             BigInteger samplesPerChunk = new BigInteger(Arrays.copyOfRange(buf,
                     offset, offset += 4));
-            System.out.println("Entry " + i + " : Samples per chunk = "
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Entry " + i + " : Samples per chunk = "
                     + samplesPerChunk);
+            }
 
             BigInteger samplesDescIdx = new BigInteger(Arrays.copyOfRange(buf,
                     offset, offset += 4));
-            System.out.println("Entry " + i + " : Sample description index = "
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Entry " + i + " : Sample description index = "
                     + samplesDescIdx);
+            }
         }
 
         return len;

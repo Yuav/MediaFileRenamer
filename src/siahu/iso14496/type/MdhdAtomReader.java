@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -73,17 +75,26 @@ import siahu.mov.reader.MOVReader;
  */
 public class MdhdAtomReader implements AtomReader {
 
+    private Logger logger;
+    
+    public MdhdAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
+    
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         byte version = buf[0];
-        System.out.println("Version = " + version);
-
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
@@ -95,8 +106,10 @@ public class MdhdAtomReader implements AtomReader {
             creationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Creation time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Creation time = "
                 + MOVReader.formatDate(creationTime.longValue()));
+        }
 
         BigInteger modificationTime = null;
         if (version == 0x00) {
@@ -106,12 +119,16 @@ public class MdhdAtomReader implements AtomReader {
             modificationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Modification time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Modification time = "
                 + MOVReader.formatDate(modificationTime.longValue()));
+        }
 
         BigInteger timescale = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Timescale = " + timescale);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Timescale = " + timescale);
+        }
 
         BigInteger duration = null;
         if (version == 0) {
@@ -121,7 +138,9 @@ public class MdhdAtomReader implements AtomReader {
             duration = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Duration = " + duration);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Duration = " + duration);
+        }
 
         offset += 2; // language
 

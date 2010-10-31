@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -14,6 +16,8 @@ import javax.sound.sampled.SourceDataLine;
 
 public class MOVExtractor {
 
+    private static Logger logger = Logger.getLogger(MOVExtractor.class.getName());
+    
     static public class Entry {
         long offset;
         long size;
@@ -53,7 +57,9 @@ public class MOVExtractor {
         String[] boxes = path.split("/");
         Entry b = boundary;
         for (int i = 0; i < boxes.length; i++) {
-            System.out.println(boxes[i]);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(boxes[i]);
+            }
             b = find(file, boxes[i], b)[0];
         }
         return b;
@@ -86,7 +92,9 @@ public class MOVExtractor {
         boundary.size = file.length();
         Entry[] p = find(file, "moov", boundary);
         for (int i = 0; i < p.length; i++) {
-            System.out.println(p[i].offset + ", " + p[i].size);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(p[i].offset + ", " + p[i].size);
+            }
             Entry[] q = find(file, "trak", p[i]);
 
             // Extract video

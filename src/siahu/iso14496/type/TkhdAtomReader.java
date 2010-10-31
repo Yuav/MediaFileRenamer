@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -39,18 +41,28 @@ import siahu.mov.reader.MOVReader;
  * 
  */
 public class TkhdAtomReader implements AtomReader {
+    
+    private Logger logger;
+    
+    public TkhdAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
 
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         // version is an integer that specifies the version of this box (0 or 1
         // in this specification)
         byte version = buf[0];
-        System.out.println("Version = " + version);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+        }
 
         // flags is a 24-bit integer with flags; the following values are
         // defined:
@@ -63,7 +75,9 @@ public class TkhdAtomReader implements AtomReader {
         // the presentation. Flag value is
         // 0x000004.
 
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
@@ -78,8 +92,10 @@ public class TkhdAtomReader implements AtomReader {
             creationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Creation time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Creation time = "
                 + MOVReader.formatDate(creationTime.longValue()));
+        }
 
         // modification_time is an integer that declares the most recent time
         // the track was modified (in
@@ -92,15 +108,19 @@ public class TkhdAtomReader implements AtomReader {
             modificationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Modification time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Modification time = "
                 + MOVReader.formatDate(modificationTime.longValue()));
+        }
 
         // track_ID is an integer that uniquely identifies this track over the
         // entire life-time of this presentation.
         // Track IDs are never re-used and cannot be zero.
         BigInteger trackID = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Track ID = " + trackID);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Track ID = " + trackID);
+        }
 
         offset += 4; // reserved
 
@@ -121,7 +141,9 @@ public class TkhdAtomReader implements AtomReader {
             duration = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Duration = " + duration);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Duration = " + duration);
+        }
 
         offset += 8; // reserved
 
@@ -131,7 +153,9 @@ public class TkhdAtomReader implements AtomReader {
         // and so on.
         BigInteger layer = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 2));
-        System.out.println("Layer = " + layer);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Layer = " + layer);
+        }
 
         // alternate_group is an integer that specifies a group or collection of
         // tracks. If this field is 0 there is no
@@ -146,7 +170,9 @@ public class TkhdAtomReader implements AtomReader {
         // size etc. A group may have only one member.
         BigInteger alternateGroup = new BigInteger(Arrays.copyOfRange(buf,
                 offset, offset += 2));
-        System.out.println("Alternate group = " + alternateGroup);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Alternate group = " + alternateGroup);
+        }
 
         // volume is a fixed 8.8 value specifying the track's relative audio
         // volume. Full volume is 1.0 (0x0100) and
@@ -160,7 +186,9 @@ public class TkhdAtomReader implements AtomReader {
                 offset += 1));
         BigInteger volumey = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 1));
-        System.out.println("Volume = " + volumex + "." + volumey);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Volume = " + volumex + "." + volumey);
+        }
 
         offset += 2; // reserved
 
@@ -185,8 +213,10 @@ public class TkhdAtomReader implements AtomReader {
                 offset += 2));
         BigInteger heighty = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 2));
-        System.out.println("Width, Height = " + widthx + "." + widthy + ", "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Width, Height = " + widthx + "." + widthy + ", "
                 + heightx + "." + heighty);
+        }
 
         return len;
     }

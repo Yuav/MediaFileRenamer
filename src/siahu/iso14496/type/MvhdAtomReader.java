@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -90,18 +92,27 @@ import siahu.mov.reader.MOVReader;
  * 
  */
 public class MvhdAtomReader implements AtomReader {
+    
+    private Logger logger;
+
+    public MvhdAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
 
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         byte version = buf[0];
-        System.out.println("Version = " + version);
-
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
@@ -113,8 +124,10 @@ public class MvhdAtomReader implements AtomReader {
             creationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Creation time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Creation time = "
                 + MOVReader.formatDate(creationTime.longValue()));
+        }
 
         BigInteger modificationTime = null;
         if (version == 0x00) {
@@ -124,12 +137,16 @@ public class MvhdAtomReader implements AtomReader {
             modificationTime = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Modification time = "
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Modification time = "
                 + MOVReader.formatDate(modificationTime.longValue()));
+        }
 
         BigInteger timescale = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Time scale = " + timescale);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Time scale = " + timescale);
+        }
 
         BigInteger duration = null;
         if (version == 0x00) {
@@ -139,19 +156,25 @@ public class MvhdAtomReader implements AtomReader {
             duration = new BigInteger(Arrays.copyOfRange(buf, offset,
                     offset += 8));
         }
-        System.out.println("Duration = " + duration);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Duration = " + duration);
+        }
 
         BigInteger ratex = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 2));
         BigInteger ratey = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 2));
-        System.out.println("Rate = " + ratex + "." + ratey);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Rate = " + ratex + "." + ratey);
+        }
 
         BigInteger volumex = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 1));
         BigInteger volumey = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 1));
-        System.out.println("Volume = " + volumex + "." + volumey);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Volume = " + volumex + "." + volumey);
+        }
 
         offset += 2; // reserved
         offset += 8; // reserved
@@ -162,7 +185,9 @@ public class MvhdAtomReader implements AtomReader {
 
         BigInteger nextTrackId = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Next track id = " + nextTrackId);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Next track id = " + nextTrackId);
+        }
 
         return len;
     }

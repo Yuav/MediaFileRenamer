@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -144,18 +146,27 @@ import siahu.mov.reader.MOVReader;
  */
 public class StsdAtomReader implements AtomReader {
 
+    private Logger logger;
+    
+    public StsdAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
+
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         // version is an integer that specifies the version of this box
         byte version = buf[0];
-        System.out.println("Version = " + version);
-
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
@@ -163,16 +174,22 @@ public class StsdAtomReader implements AtomReader {
         // following table
         BigInteger entryCount = new BigInteger(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Entry count = " + entryCount);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Entry count = " + entryCount);
+        }
 
         for (int i = 0; i < entryCount.intValue(); i++) {
-            System.out.println(HdlrAtomReader.handlerType);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest(HdlrAtomReader.handlerType);
+            }
             if (HdlrAtomReader.handlerType.equals("soun")) {
 
             } else if (HdlrAtomReader.handlerType.equals("vide")) {
                 BigInteger size = new BigInteger(Arrays.copyOfRange(buf,
                         offset, offset += 4));
-                System.out.println("Size = " + size);
+                if (logger.isLoggable(Level.FINEST)) {
+                    logger.finest("Size = " + size);
+                }
             } else if (HdlrAtomReader.handlerType.equals("hint")) {
 
             } else if (HdlrAtomReader.handlerType.equals("meta")) {
@@ -181,28 +198,6 @@ public class StsdAtomReader implements AtomReader {
         }
 
         return len;
-        /*
-         * int rl = 0;
-         * 
-         * System.out.println("Version = " + dis.readByte()); rl += 1;t
-         * 
-         * byte[] fbytes = new byte[3]; dis.read(fbytes); rl += 3;
-         * System.out.println("Flags = " + fbytes[0] + fbytes[1] + fbytes[2]);
-         * 
-         * int entries = dis.readInt(); rl += 4;
-         * 
-         * for (int i = 0; i < entries; i++) { int size = dis.readInt();
-         * System.out.println("Size = " + size); rl += 4;
-         * 
-         * byte[] fourcc = new byte[4]; dis.read(fourcc);
-         * System.out.println("Fourcc = " + new String(fourcc)); rl += 4;
-         * 
-         * for (int j = 0; j < (size-8); j++) {
-         * System.out.print(Integer.toHexString(dis.readByte()) + " "); rl++; }
-         * }
-         * 
-         * System.out.println(); return rl;
-         */
     }
 
 }

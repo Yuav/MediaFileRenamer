@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -85,8 +87,11 @@ import siahu.mov.reader.MOVReader;
  * 
  */
 public class FtypAtomReader extends BaseAtomReader {
+    
+    private Logger logger;
 
     public FtypAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Override
@@ -94,22 +99,30 @@ public class FtypAtomReader extends BaseAtomReader {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         int offset = 0;
 
         String majorBrand = new String(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Major brand = " + majorBrand);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Major brand = " + majorBrand);
+        }
 
         BigInteger minorVersion = new BigInteger(Arrays.copyOfRange(buf,
                 offset, offset += 4));
-        System.out.println("Minor version = " + minorVersion);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Minor version = " + minorVersion);
+        }
 
         while (offset < len) {
             String compatibleBrand = new String(Arrays.copyOfRange(buf, offset,
                     offset += 4));
-            System.out.println("Compatible brand = " + compatibleBrand);
+            if (logger.isLoggable(Level.FINEST)) {
+                logger.finest("Compatible brand = " + compatibleBrand);
+            }
         }
 
         return len;

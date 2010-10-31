@@ -3,6 +3,8 @@ package siahu.iso14496.type;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import siahu.mov.reader.MOVReader;
 
@@ -48,19 +50,27 @@ import siahu.mov.reader.MOVReader;
 public class HdlrAtomReader implements AtomReader {
 
     static public String handlerType;
+    private Logger logger;
 
+    public HdlrAtomReader() {
+        logger = Logger.getLogger(this.getClass().getName());
+    }
+    
     @Override
     public int read(DataInputStream dis, final int len) throws IOException {
 
         byte[] buf = new byte[len];
         dis.readFully(buf);
-        System.out.println(MOVReader.bytes2hex(buf));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest(MOVReader.bytes2hex(buf));
+        }
 
         // version is an integer that specifies the version of this box
         byte version = buf[0];
-        System.out.println("Version = " + version);
-
-        System.out.println("Flags = " + buf[1] + buf[2] + buf[3]);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Version = " + version);
+            logger.finest("Flags = " + buf[1] + buf[2] + buf[3]);
+        }
 
         int offset = 4;
 
@@ -80,7 +90,9 @@ public class HdlrAtomReader implements AtomReader {
         // merely being used to hold resources.
         String handlerType = new String(Arrays.copyOfRange(buf, offset,
                 offset += 4));
-        System.out.println("Handler type = " + handlerType);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Handler type = " + handlerType);
+        }
         HdlrAtomReader.handlerType = handlerType;
 
         offset += 12; // reserved
@@ -91,7 +103,9 @@ public class HdlrAtomReader implements AtomReader {
         byte namelength = buf[offset++];
         String name = new String(Arrays.copyOfRange(buf, offset,
                 offset += namelength));
-        System.out.println("Name = " + name);
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.finest("Name = " + name);
+        }
 
         return len;
     }
